@@ -1,14 +1,16 @@
-using MyModule
+using Lattice2D
 using Documenter
 
+# ドキュメントを生成する
 makedocs(
-    sitename = "MyModule.jl",
-    modules  = [MyModule],
+    sitename = "Lattice2D.jl",
+    modules  = [Lattice2D],
     pages    = [
-        "Home" => "index.md"
+        "Home" => "index.md",
+        "Gallery" => "Gallery.md"
     ]
 )
 
 deploydocs(
-    repo = "github.com/sotashimozono/MyModule.jl.git",
+    repo = "github.com/sotashimozono/Lattice2D.jl.git",
 )

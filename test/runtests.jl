@@ -1,11 +1,16 @@
 ENV["GKSwstype"] = "100"
 
-const FIG_BASE = joinpath(pkgdir(MyModule), "docs", "src", "assets", "figures")
-const PATHS = Dict()
+using Lattice2D, Test, Plots
+using LinearAlgebra
+
+const FIG_BASE = joinpath(pkgdir(Lattice2D), "docs", "src", "assets", "figures")
+const FIG_LAT = joinpath(FIG_BASE, "lattice")
+const PATHS = Dict(
+    :geometry => joinpath(FIG_LAT, "geometry")
+)
 mkpath.(values(PATHS))
 
-using MyModule, Test
-const dirs = ["model", "solver"]
+const dirs = ["core", "lattices", "utils"]
 
 @testset "tests" begin
     test_args = copy(ARGS)
@@ -13,16 +18,16 @@ const dirs = ["model", "solver"]
     @time for dir in dirs
         dirpath = joinpath(@__DIR__, dir)
         println("\nTest $(dirpath)")
+        # Find all files named test_*.jl in the directory and include them.
         files = sort(filter(f -> startswith(f, "test_") && endswith(f, ".jl"), readdir(dirpath)))
         if isempty(files)
             println("  No test files found in $(dirpath).")
+            @test true
         else
             for f in files
                 filepath = joinpath(dirpath, f)
-                @time begin
-                    println("  Including $(filepath)")
-                    include(filepath)
-                end
+                println("  Including $(filepath)")
+                include(filepath)
             end
         end
     end
