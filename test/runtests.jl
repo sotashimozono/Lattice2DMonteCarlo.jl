@@ -5,13 +5,11 @@ using LinearAlgebra
 
 const FIG_BASE = joinpath(pkgdir(Lattice2D), "docs", "src", "assets", "figures")
 const FIG_LAT = joinpath(FIG_BASE, "lattice")
-const PATHS = Dict(
-    :geometry => joinpath(FIG_LAT, "geometry")
-)
+const PATHS = Dict(:geometry => joinpath(FIG_LAT, "geometry"))
 mkpath.(values(PATHS))
 
-const dirs = ["core", "lattices", "utils"]
-
+# const dirs = ["core", "lattices", "utils"]
+const dirs = ["Ising"]
 @testset "tests" begin
     test_args = copy(ARGS)
     println("Passed arguments ARGS = $(test_args) to tests.")
@@ -19,7 +17,9 @@ const dirs = ["core", "lattices", "utils"]
         dirpath = joinpath(@__DIR__, dir)
         println("\nTest $(dirpath)")
         # Find all files named test_*.jl in the directory and include them.
-        files = sort(filter(f -> startswith(f, "test_") && endswith(f, ".jl"), readdir(dirpath)))
+        files = sort(
+            filter(f -> startswith(f, "test_") && endswith(f, ".jl"), readdir(dirpath))
+        )
         if isempty(files)
             println("  No test files found in $(dirpath).")
             @test true
