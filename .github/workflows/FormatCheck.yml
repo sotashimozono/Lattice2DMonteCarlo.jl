@@ -13,4 +13,12 @@ permissions:
 jobs:
   format-check:
     name: "Format Check"
-    uses: "ITensor/ITensorActions/.github/workflows/FormatCheck.yml@main"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+      - uses: julia-actions/julia-format@v1
+        with:
+          args: '--verbose --check'
