@@ -1,6 +1,6 @@
 # Lattice2D.jl
 
-[![docs: dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://sotashimozono.github.io/Lattice2D.jl/dev/)
+[![docs: dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://sotashimozono.github.io/Lattice2DMonteCarlo.jl/dev/)
 [![Julia](https://img.shields.io/badge/julia-v1.10+-9558b2.svg)](https://julialang.org)
 [![Code Style: Blue](https://img.shields.io/badge/Code%20Style-Blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![codecov](https://codecov.io/gh/sotashimozono/Lattice2DMonteCarlo.jl/graph/badge.svg?token=0KASG8XPZ1)](https://codecov.io/gh/sotashimozono/Lattice2DMonteCarlo.jl)

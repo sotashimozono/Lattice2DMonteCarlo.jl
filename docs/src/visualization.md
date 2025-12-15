@@ -8,4 +8,4 @@ Modules = [Lattice2DMonteCarlo]
 Pages = [
     "utils/visualize.jl"
 ]
----
+```
