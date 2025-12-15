@@ -7,7 +7,11 @@
 [![CI](https://github.com/sotashimozono/Lattice2DMonteCarlo.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/sotashimozono/Lattice2DMonteCarlo.jl/actions/workflows/CI.yml)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository was created for implementing classical ising model in different lattices.
-[Lattice2D.jl](https://github.com/sotashimozono/Lattice2D.jl) provides rich lattice features. Here we intended to test this module.
+**Lattice2DMonteCarlo.jl** is an example application of the [Lattice2D](https://github.com/sotashimozono/Lattice2D.jl) package. It provides implementations of various classical lattice systems. By adhering to specific interfaces, you can easily implement custom models or update algorithms.
 
-`src/`, `test/` directories are taken from Lattice2D.jl.
+## Installation
+
+```julia
+using Pkg
+Pkg.add(url="https://github.com/sotashimozono/Lattice2DMonteCarlo.jl")
+```

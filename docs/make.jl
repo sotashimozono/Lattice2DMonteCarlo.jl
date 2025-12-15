@@ -23,4 +23,4 @@ makedocs(;
     ],
 )
 
-deploydocs(; repo="github.com/sotashimozono/Lattice2D.jl.git")
+deploydocs(; repo="github.com/sotashimozono/Lattice2DMonteCarlo.jl.git")
