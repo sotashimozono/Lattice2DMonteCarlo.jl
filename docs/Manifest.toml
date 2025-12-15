@@ -466,9 +466,11 @@ version = "0.16.10"
 
 [[deps.Lattice2D]]
 deps = ["LinearAlgebra", "Plots"]
-path = "../../Lattice2D.jl"
+git-tree-sha1 = "105641d66e7feb32a3cde2f7fe122d16152168f6"
+repo-rev = "main"
+repo-url = "https://github.com/sotashimozono/Lattice2D.jl"
 uuid = "e8031020-b7ff-4f1d-bee4-f79aea4cf140"
-version = "0.1.0"
+version = "0.1.1"
 
 [[deps.Lattice2DMonteCarlo]]
 deps = ["CSV", "ColorSchemes", "DataFrames", "Lattice2D", "LinearAlgebra", "Pkg", "Plots", "Random", "Statistics", "Test"]
