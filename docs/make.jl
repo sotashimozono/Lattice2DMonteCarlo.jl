@@ -1,16 +1,26 @@
-using Lattice2D
 using Documenter
+using Lattice2DMonteCarlo
 
-# ドキュメントを生成する
-makedocs(
-    sitename = "Lattice2D.jl",
-    modules  = [Lattice2D],
-    pages    = [
+makedocs(;
+    sitename="Lattice2DMonteCarlo.jl",
+    modules=[Lattice2DMonteCarlo],
+    authors="Sota Shimozono",
+    format=Documenter.HTML(;
+        prettyurls=get(ENV, "CI", "false") == "true",
+        canonical="https://sotashimozono.github.io/Lattice2DMonteCarlo.jl",
+        edit_link="main",
+        assets=String[],
+    ),
+    warnonly=true,
+    pages=[
         "Home" => "index.md",
-        "Gallery" => "Gallery.md"
-    ]
+        "API Reference" => [
+            "Core & Interfaces" => "core.md",
+            "Models" => "models.md",
+            "Algorithms" => "algorithms.md",
+            "Visualization" => "visualization.md",
+        ],
+    ],
 )
 
-deploydocs(
-    repo = "github.com/sotashimozono/Lattice2D.jl.git",
-)
+deploydocs(; repo="github.com/sotashimozono/Lattice2D.jl.git")

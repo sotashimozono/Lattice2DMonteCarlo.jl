@@ -1,4 +1,12 @@
-using ColorSchemes
+"""
+    plot_setup(lat::Lattice; title="") -> (Plots.Plot, Float64)
+
+Initializes the plotting environment for a lattice simulation.
+
+# Returns
+- A `Plots.Plot` object with the lattice bonds already drawn.
+- A calculated `marker_size` optimized for the lattice scale.
+"""
 const p_init = plot(;
     aspect_ratio=:equal,
     grid=false,
@@ -15,6 +23,16 @@ function plot_setup(lat::Lattice; title="")
     visualize_bonds(p, lat)
     return p, ms
 end
+"""
+    find_marker_size(lat::Lattice; ms_scale=80.0) -> Float64
+
+Heuristically determines an appropriate marker size for plotting sites.
+
+# Logic
+It calculates the minimum distance between connected sites (bond length) and scales it 
+relative to the total area of the lattice. This ensures markers don't overlap too much
+on dense lattices or appear too small on sparse ones.
+"""
 function find_marker_size(lat::Lattice; ms_scale=80.0)
     min_dist = 0.0
     if isempty(lat.bonds)
@@ -31,6 +49,15 @@ function find_marker_size(lat::Lattice; ms_scale=80.0)
     marker_size = ms_scale * scaling
     return marker_size
 end
+"""
+    visualize_bonds(p, lat::Lattice)
+
+Draws the lattice connections (edges) on the plot `p`.
+
+# Periodic Boundary Conditions
+It includes a threshold check (`1.5 * max_basis_norm`) to prevent drawing lines across the entire plot
+when sites are connected via periodic boundaries. Bonds longer than this threshold are skipped.
+"""
 function visualize_bonds(p, lat::Lattice)
     threhold = 1.5 * maximum(norm.(lat.unit_cell.basis))
     seg_x, seg_y = Float64[], Float64[]
@@ -44,8 +71,15 @@ function visualize_bonds(p, lat::Lattice)
     end
     return plot!(p, seg_x, seg_y; color=:black, lw=1.0, label="")
 end
+"""
+    plot_state!(p, lat, grids, model; marker_size=10.0)
 
+Plots the current state of the spins onto the existing plot `p`.
 
+# Dispatch Behavior
+- **Discrete Models (Ising, Potts)**: Uses `scatter!` to draw colored dots at lattice sites.
+- **Continuous Models (XY)**: Uses `quiver!` to draw arrows representing the spin direction.
+"""
 function plot_state!(
     p::Plots.Plot,
     lat::Lattice,
@@ -58,7 +92,15 @@ function plot_state!(
     colors = get_state_colors(model, grids)
     return scatter!(p, xs, ys; ms=marker_size, mc=colors, markerstrokewidth=0, label="")
 end
+"""
+    get_state_colors(model, grids) -> Vector{Symbol} | Vector{Color}
 
+Determines the color of each site based on its spin state.
+
+# Implementations
+- `IsingModel`: Maps up (+1) to `:red` and down (-1) to `:blue`.
+- `PottsModel`: Maps states `1..q` to a categorical color gradient (`:tab10`).
+"""
 function get_state_colors(model::IsingModel, grids::AbstractVector)
     return [s > 0 ? :red : :blue for s in grids]
 end
@@ -69,6 +111,13 @@ function get_state_colors(model::PottsModel, grids::AbstractVector)
     return [palette[(s - 1) / (q - 1)] for s in grids]
 end
 # XY model : visualize as arrows
+"""
+    plot_state!(p, lat, grids, model::XYModel; marker_size=10.0)
+
+Specialized visualization for the XY Model.
+Instead of colored dots, it draws arrows (quivers) at each site.
+The direction of the arrow corresponds to the angle \\theta of the spin.
+"""
 function plot_state!(
     p::Plots.Plot,
     lat::Lattice,
@@ -82,9 +131,14 @@ function plot_state!(
     v = sin.(grids) .* (marker_size * 0.01)
     return quiver!(p, xs, ys; quiver=(u, v), color=:black)
 end
+"""
+    visualize_snapshot(grids, lat, model) -> Plots.Plot
 
+A high-level function to generate a complete visual snapshot of the current system state.
+It sets up the plot, draws bonds, and overlays the current spin configuration.
+"""
 function visualize_snapshot(grids, lat, model)
-    p, ms = plot_setup(lat; title="$(typeof(model)) Step")
+    p, ms = plot_setup(lat; title="(typeof(model)) Step")
     plot_state!(p, lat, grids, model; marker_size=ms)
     return p
 end

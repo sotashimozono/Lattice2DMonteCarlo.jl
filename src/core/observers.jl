@@ -1,6 +1,35 @@
-measure_energy(grids, lat, model) = total_energy(grids, lat, model)
-measure_magnetization(grids, lat, model) = error("measure_magnetization not implemented for $(typeof(model))")
+"""
+    measure_energy(grids, lat, model) -> Float64
 
+Calculates the total energy of the system.
+This is a wrapper around [`total_energy`](@ref) to provide a consistent interface for observers.
+"""
+measure_energy(grids, lat, model) = total_energy(grids, lat, model)
+"""
+    measure_magnetization(grids, lat, model) -> Float64
+
+Calculates the magnetization (order parameter) of the system.
+This function must be implemented for each specific `model` type.
+
+# Returns
+- The magnetization per site (usually normalized between 0 and 1).
+
+# Throws
+- `ErrorException`: If not implemented for the specific model type.
+"""
+measure_magnetization(grids, lat, model) = error("measure_magnetization not implemented for (typeof(model))")
+"""
+    FunctionObserver(name::String, func::Function; interval::Int=100)
+
+A generic observer that tracks a scalar value returned by a custom function `func`.
+
+# Fields
+- `name::String`: The name of the observable (used as a column name in DataFrames).
+- `measure_func::Function`: A function with signature `f(grids, lat, model)` returning a `Float64`.
+- `interval::Int`: The frequency of observation (in Monte Carlo steps).
+- `steps::Vector{Int}`: History of time steps where measurements were taken.
+- `history::Vector{Float64}`: History of measured values.
+"""
 mutable struct FunctionObserver <: AbstractObserver
     name::String
     measure_func::Function
@@ -13,7 +42,14 @@ export FunctionObserver, measure_magnetization, measure_energy
 function FunctionObserver(name::String, func::Function; interval::Int=100)
     return FunctionObserver(name, func, interval, Int[], Float64[])
 end
+"""
+    observe!(obs, grids, lat, kbT, model, step)
 
+Records the state of the system into the observer.
+
+- For `FunctionObserver`: Executes the user-defined measurement function.
+- For `ThermodynamicObserver`: Accumulates Energy (E, E^2) and Magnetization (M, M^2, M^4) statistics for post-processing.
+"""
 function observe!(
     obs::FunctionObserver,
     grids::AbstractVector{T},
@@ -27,11 +63,26 @@ function observe!(
     push!(obs.history, val)
     return nothing
 end
+"""
+    to_dataframe(obs::FunctionObserver) -> DataFrame
 
+Converts the recorded history of a `FunctionObserver` into a DataFrame.
+Returns columns `:Step` and `Symbol(obs.name)`.
+"""
 function to_dataframe(obs::FunctionObserver)
     return DataFrame(:Step => obs.steps, Symbol(obs.name) => obs.history)
 end
+"""
+    ThermodynamicObserver(; interval::Int=10)
 
+An observer designed to accumulate statistics required to calculate thermodynamic quantities
+such as Specific Heat and Susceptibility.
+
+# accumulated Statistics
+- `sum_E`, `sum_E2`: Sum of Energy and Energy squared.
+- `sum_M`, `sum_M2`, `sum_M4`: Sum of Magnetization moments.
+- `n_samples`: Total number of samples taken.
+"""
 mutable struct ThermodynamicObserver <: AbstractObserver
     interval::Int
     n_samples::Int
@@ -65,6 +116,20 @@ function observe!(
     obs.sum_M2 += M2
     return obs.sum_M4 += M2^2 # M^4
 end
+"""
+    get_thermodynamics(obs::ThermodynamicObserver, kbT::Float64, N::Int, model::AbstractModel) -> Dict
+
+Computes physical quantities using the accumulated statistics in the observer.
+
+# Returns
+A Dictionary containing:
+- `"Energy"`: Internal energy density (E/N).
+- `"Magnetization"`: Magnetization density (M).
+- `"SpecificHeat"`: Heat capacity per site C_v = \\frac{\\text{var}(E)}{k_B T^2 N}.
+- `"Susceptibility"`: Magnetic susceptibility \\chi = \\frac{\\text{var}(M)}{k_B T} N.
+- `"BinderParam"`: Binder cumulant U_4 = 1 - \\frac{\\langle M^4 \\rangle}{3 \\langle M^2 \\rangle^2}.
+- `"Samples"`: Number of samples used for the calculation.
+"""
 function get_thermodynamics(
     obs::ThermodynamicObserver, kbT::Float64, N::Int, model::AbstractModel
 )

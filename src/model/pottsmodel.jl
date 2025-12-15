@@ -1,3 +1,12 @@
+"""
+    PottsModel(q::Int=3, J::Float64=1.0)
+
+Represents the q-state Potts model. Spins take values s_i \\in \\{1, 2, \\dots, q\\}.
+
+# Hamiltonian
+H = -J \\sum_{\\langle i, j \\rangle} \\delta(s_i, s_j)
+where \\delta is the Kronecker delta (1 if equal, 0 otherwise).
+"""
 @kwdef struct PottsModel <: AbstractModel{Int}
     q::Int = 3
     J::Float64 = 1.0
@@ -20,7 +29,12 @@ function local_hamiltonian(
     end
     return energy
 end
+"""
+    propose(rng, ::SpinFlip, ..., model::PottsModel, site)
 
+Proposes a new state for the Potts model.
+The new state is chosen uniformly at random from the q-1 states that are **not** the current state.
+"""
 function propose(
     rng::AbstractRNG,
     ::SpinFlip,
@@ -36,7 +50,16 @@ function propose(
     return (LocalChange(site, new_val, current),)
 end
 get_binder_coeff(::PottsModel) = 3.0
+"""
+    measure_magnetization(grids, lat, model::PottsModel)
 
+Calculates the order parameter for the Potts model based on the density of the majority spin.
+
+# Formula
+M = \\frac{q \\rho_{max} - 1}{q - 1}
+where \\rho_{max} is the fraction of sites occupied by the most common spin state.
+This ensures M=1 for a fully ordered state and M=0 for a disordered state.
+"""
 function measure_magnetization(grids, lat, model::PottsModel)
     counts = zeros(Int, model.q)
     for s in grids
