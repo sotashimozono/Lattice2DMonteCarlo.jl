@@ -20,12 +20,10 @@ Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 ClassicalMonteCarloDataFramesExt = "DataFrames"
 ClassicalMonteCarloPlotsExt = ["Plots", "ColorSchemes"]
 
-# Lattice2D, LatticeCore and QAtlas are all in the General registry — resolved
-# from there (no [sources] override, no [compat] pin) so CMC follows their releases.
-
 [compat]
 ColorSchemes = "3"
 DataFrames = "1"
+LatticeCore = "0.12"
 LinearAlgebra = "1"
 Pkg = "1"
 Plots = "1"
